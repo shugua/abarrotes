@@ -1,0 +1,35 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition>
+
+        <h:form style="margin-bottom:0px!important;">
+            <div class="container custom-container">
+                <div class="row">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-4">
+                        <img src="../Fresh/javax.faces.resource/images/logo.jpg.xhtml" height="90px"/>
+                    </div>
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-8 align-self-lg-end alignRight">
+                        <h4 class="dropdown">
+                            <a href="#" class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                #{infoUsuarioController.usuario.nombre}
+                            </a>
+                            <div class="dropdown-menu alignRight" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="logout">Cerrar Session</a>
+                            </div>
+                        </h4>
+                        <h4> </h4>
+                        <h4> #{infoUsuarioController.usuario.rol.nombreRol}</h4>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                <p:menubar id="menuHeader" styleClass="hidden-xs menubarHide" model="#{infoUsuarioController.menuModel}"  autoDisplay="true" />			                		 		     			
+            </div>
+        </h:form>
+
+
+    </ui:composition>
+</html>

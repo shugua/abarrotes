@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Salida</title>
+        <p:ajaxStatus onsuccess="PF('statusDialog').hide()" />
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+
+        <div class="container">
+            <p:panel>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Guardar" update=":mainForm" ajax="true" action="#{salidaController.save}" onclick="PF('statusDialog').show()"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row form-group">
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autoCompleteOrden" value ="Numero de Orden Trabajo"/> 
+                        <p:autoComplete  placeholder="Seleccione una Orden" id="autoCompleteOrden" 
+                                         value="#{salidaController.ordenTrabajo}" completeMethod="#{salidaController.autoCompleteOrdenTrabajo}" forceSelection="true" var="orden"  
+                                         itemLabel="#{orden.numeroOrden}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         itemValue="#{orden}" converter="#{ordenTrabajoConverter}">
+                            <p:ajax event="itemSelect" update=":mainForm:" listener="#{salidaController.buscaDatos}" />
+
+                        </p:autoComplete>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="chofer" value ="Chofer:"/> 
+                        <p:inputText  placeholder="Chofer" id="chofer" 
+                                      value="#{salidaController.data.chofer}" maxlength="254">
+                            <p:ajax event="blur" process="@this" onstart="PF('statusDialog').show()"/>
+                        </p:inputText>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="tract" value ="Tract:"/> 
+                        <p:inputText  placeholder="Tract" id="tract" 
+                                      value="#{salidaController.data.tract}" maxlength="64">
+                            <p:ajax event="blur" process="@this" onstart="PF('statusDialog').show()"/>
+                        </p:inputText>
+
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="plate" value ="Plate:"/> 
+                        <p:inputText  placeholder="Plate" id="plate" 
+                                      value="#{salidaController.data.plate}" maxlength="64">
+                            <p:ajax event="blur" process="@this" onstart="PF('statusDialog').show()"/>
+                        </p:inputText>
+
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="box" value ="Box:"/> 
+                        <p:inputText  placeholder="Datos del Camion" id="box" 
+                                      value="#{salidaController.data.box}" maxlength="64">
+                            <p:ajax event="blur" process="@this" onstart="PF('statusDialog').show()"/>
+                        </p:inputText>
+
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="plateBox" value ="Plate Box:"/> 
+                        <p:inputText  placeholder="Plate Box" id="plateBox" 
+                                      value="#{salidaController.data.plateBox}" maxlength="64">
+                            <p:ajax event="blur" process="@this" onstart="PF('statusDialog').show()"/>
+                        </p:inputText>
+
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="seal" value ="Seal:"/> 
+                        <p:inputText  placeholder="Seal" id="seal" 
+                                      value="#{salidaController.data.seal}" maxlength="64">
+                            <p:ajax event="blur" process="@this" onstart="PF('statusDialog').show()"/>
+                        </p:inputText>
+
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="deviceId" value ="Device Id:"/> 
+                        <p:inputText  placeholder="Device Id" id="deviceId" 
+                                      value="#{salidaController.data.deviceId}" maxlength="64">
+                            <p:ajax event="blur" process="@this" onstart="PF('statusDialog').show()"/>
+                        </p:inputText>
+
+                    </div>
+
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="observaciones" value ="Observaciones:"/> 
+                        <p:inputText  placeholder="Observaciones" id="observaciones" 
+                                      value="#{salidaController.data.observaciones}" maxlength="254">
+                            <p:ajax event="blur" process="@this" onstart="PF('statusDialog').show()"/>
+                        </p:inputText>
+                    </div>
+
+                </div>
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row form-group">
+                    <p:dataTable id="historial" var="t" value="#{salidaController.model}" rowKey="#{t.idEnvasadoPk}"
+                                 rowStyleClass="#{t.estatus eq '1' ? 'alert-info':(t.estatus eq '2' ? 'alert-warning':'alert-danger')}" editable="true" editMode="cell" editInitEvent="dblclick"
+                                 selection="#{salidaController.lstEnvasado}" disabledSelection="#{t.estatus ne '1'}">
+
+                        <p:ajax event="toggleSelect" update="@this" process="@this"/>
+                        <p:ajax event="rowSelectCheckbox" update="@this"/>
+                        <p:ajax event="rowUnselectCheckbox" update="@this"/>
+                        <p:ajax event="rowSelect" update="@this"/>
+                        <p:ajax event="rowUnselect" update="@this"/>
+                        <p:column selectionMode="multiple" width="32px;" class="alignCenter"/>
+                        <p:column headerText="Tarima" width="60px;">
+                            <h:outputText value="#{t.numeroTarima}" />
+                        </p:column>
+                        <p:column headerText="Producto" width="170px;">
+                            <h:outputText value="#{t.nombreTipoProducto}" />
+                        </p:column>
+                        <p:column headerText="Cantidad" class="alignRight">
+                            <h:outputText value="#{t.cantidad}"/>
+                        </p:column>
+                        <p:column headerText="Cantidad Salida" class="alignRight">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{t.cantidadSalida}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber id="inputCantidadS" value="#{t.cantidadSalida}" style="width:100%" maxValue="#{t.cantidad}"/>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column headerText="Peso Neto" class="alignRight">
+                            <h:outputText value="#{t.kilos}" />
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </p:panel>
+
+
+            <!--<iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="{salidaController.rutaPDF}"/>-->
+        </div>
+
+    </ui:define>
+</ui:composition>

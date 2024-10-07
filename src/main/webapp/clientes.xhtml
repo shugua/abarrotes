@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Clientes</title>
+        <p:ajaxStatus onsuccess="PF('statusDialog').hide()" />
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+        
+        <div class="container">
+            <p:panel rendered="#{clienteController.stateView == 'init'}">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Nuevo" update=":mainForm" ajax="true" action="#{clienteController.viewNew}" onclick="PF('statusDialog').show()" resetValues="true"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                    <p:dataTable id="cliente" var="c" value="#{clienteController.model}" rowKey="#{c.idClientePk}"
+                                 rowStyleClass="#{c.estatus eq 1 ? 'alert-info':'alert-danger'}">
+
+                        <p:column headerText="Id">
+                            <h:outputText value="#{c.idClientePk}" />
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{c.nombre}" />
+                        </p:column>
+                        <p:column headerText="Telefono">
+                            <h:outputText value="#{c.numeroTelefono}" />
+                        </p:column>
+                        <p:column headerText="Editar">
+                            <p:commandButton id="buttonEditar" ajax="true"  action="#{clienteController.searchById}" styleClass="edit-button rounded-button ui-button-success" icon="pi pi-pencil" update=":mainForm" onclick="PF('statusDialog').show()">
+                                <f:setPropertyActionListener value="#{c}" target="#{clienteController.data}"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="Eliminar">
+                            <p:commandButton id="buttonEliminar" ajax="true"  action="#{clienteController.detele}" class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm" onclick="PF('statusDialog').show()">
+                                <f:setPropertyActionListener value="#{c}" target="#{clienteController.data}"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </p:panel>
+            <p:panel rendered="#{clienteController.stateView eq 'new' || clienteController.stateView eq 'edit'}">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Guardar" update=":mainForm" ajax="true" action="#{clienteController.save}" onclick="PF('statusDialog').show()"/>
+                    <p:commandButton value="Atras" update=":mainForm" ajax="true" action="#{clienteController.back}" onclick="PF('statusDialog').show()" immediate="true"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row form-group">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight" for="inputNombre" value="Nombre:"/>
+                        <p:inputText id="inputNombre" class="col-lg-6 col-md-6 col-sm-6 col-6" value="#{clienteController.data.nombre}" required="true"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Telefono:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:inputText value="#{clienteController.data.numeroTelefono}" class="col-lg-6 col-md-6 col-sm-6 col-6"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Clave:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:inputText value="#{clienteController.data.clave}" class="col-lg-6 col-md-6 col-sm-6 col-6"/>
+                    </div>
+                </div>
+            </p:panel>
+        </div>
+    </ui:define>
+</ui:composition>

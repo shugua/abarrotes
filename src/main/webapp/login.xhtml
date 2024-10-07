@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+
+    <h:head>
+
+        <h:head>
+            <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+            <!-- Include jQuery -->
+            <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+            <!-- Include Popper.js -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+            <!-- Include Bootstrap JS -->
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+            <!-- Include PrimeFaces -->
+            <h:outputScript library="primefaces" name="primefaces.js" />
+        </h:head>
+
+
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Fresh</title>
+
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+            }
+
+            .login-container {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            h2 {
+                text-align: center;
+                color: #333;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 8px;
+                color: #333;
+            }
+
+            input {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 16px;
+                box-sizing: border-box;
+            }
+
+            button {
+                background-color: #4caf50;
+                color: #fff;
+                padding: 10px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                width: 100%;
+            }
+
+            button:hover {
+                background-color: #45a049;
+            }
+        </style>
+    </h:head>
+
+
+    <h:body>
+        <div class="login-container">
+
+            <c:if test="${not empty param.error}">
+                <p style="color:red">
+                    Tu intento de inicio de sesión no fue exitoso.<br />
+                    <!--Motivo: <p:outputLabel value="{SPRING_SECURITY_LAST_EXCEPTION.message}" />.-->
+                </p>
+            </c:if>
+            <p:growl id="growl" showDetail="true" life="6000" />
+            <h2>Login</h2>
+            <h:form id="loginFormId" prependId="false">
+                <label for="username">Usuarios:</label>
+                <p:inputText type="text" id="username" required="true"/>
+
+                <label for="password">Contraseña</label>
+                <p:inputText type="password" id="password" required="true"/>
+
+                <p:commandButton id="btnLogin" value="Login" ajax="false" />
+            </h:form>
+        </div>
+    </h:body>
+</ui:composition>

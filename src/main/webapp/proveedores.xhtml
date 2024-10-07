@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">     
+
+        <title>Proveedores</title>
+        <!--        <h:commandLink>
+                    <h:graphicImage name="images/excel.png" width="24" title="Export to Excel" alt="Export to Excel"/>
+                    <p:dataExporter type="xls" target="tblSismos" fileName="sismos"/>
+                </h:commandLink>-->
+        <p:ajaxStatus onsuccess="PF('statusDialog').hide()" />
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+
+        <div class="container">
+            <p:panel rendered="#{proveedorController.stateView == 'init'}">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Nuevo" update=":mainForm" ajax="true" action="#{proveedorController.viewNew}" onclick="PF('statusDialog').show()" resetValues="true"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 form-group">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Tipo:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:selectOneMenu  style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{proveedorController.tipo}" >
+                            <f:selectItem itemLabel="Material Empaque" itemValue="1"/>
+                            <f:selectItem itemLabel="Materia Prima" itemValue="2"/>
+                            <p:ajax event="itemSelect" update=":mainForm:tProveedor" listener="#{proveedorController.buscaProveedor}" />
+
+                        </p:selectOneMenu>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 form-group">
+                    <p:dataTable id="tProveedor" var="p" value="#{proveedorController.model}" rowKey="#{p.idProveedorPk}"
+                                 rowStyleClass="#{p.estatus eq '1' ? 'alert-info':'alert-danger'}">
+
+                        <p:column headerText="Id">
+                            <h:outputText value="#{p.idProveedorPk}" />
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{p.nombre}" />
+                        </p:column>
+                        <p:column headerText="Clave">
+                            <h:outputText value="#{p.clave}" />
+                        </p:column>
+                        <p:column headerText="Telefono">
+                            <h:outputText value="#{p.numeroTelefono}" />
+                        </p:column>
+                        <p:column headerText="Correo">
+                            <h:outputText value="#{p.correo}" />
+                        </p:column>
+                        <p:column headerText="Editar">
+                            <p:commandButton id="buttonEditar" ajax="true"  action="#{proveedorController.searchById}" styleClass="edit-button rounded-button ui-button-success" icon="pi pi-pencil" update=":mainForm" onclick="PF('statusDialog').show()">
+                                <f:setPropertyActionListener value="#{p}" target="#{proveedorController.data}"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="Eliminar">
+                            <p:commandButton id="buttonEliminar" ajax="true"  action="#{proveedorController.detele}" class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm" onclick="PF('statusDialog').show()">
+                                <f:setPropertyActionListener value="#{p}" target="#{proveedorController.data}"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </p:panel>
+            <p:panel rendered="#{proveedorController.stateView eq 'new' || proveedorController.stateView eq 'edit'}">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Guardar" update=":mainForm" ajax="true" action="#{proveedorController.save}" onclick="PF('statusDialog').show()"/>
+                    <p:commandButton value="Atras" update=":mainForm" ajax="true" action="#{proveedorController.back}" onclick="PF('statusDialog').show()" immediate="true"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row form-group">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight" for="inputNombre" value="Nombre:"/>
+                        <p:inputText id="inputNombre" class="col-lg-6 col-md-6 col-sm-6 col-6" value="#{proveedorController.data.nombre}" required="true" maxlength="128"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Telefono:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:inputText value="#{proveedorController.data.numeroTelefono}" class="col-lg-6 col-md-6 col-sm-6 col-6" maxlength="15"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Domicilio:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:inputText value="#{proveedorController.data.domicilio}" class="col-lg-6 col-md-6 col-sm-6 col-6" maxlength="254"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Rfc:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:inputText value="#{proveedorController.data.rfc}" class="col-lg-6 col-md-6 col-sm-6 col-6" maxlength="13"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Tipo:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:selectOneMenu  id="selectTipo" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{proveedorController.data.tipoProveedor}" >
+                            <f:selectItem itemLabel="Material Empaque" itemValue="1"/>
+                            <f:selectItem itemLabel="Materia Prima" itemValue="2"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Clave:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:inputText value="#{proveedorController.data.clave}" readonly="true" class="col-lg-6 col-md-6 col-sm-6 col-6"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Termino de Pago:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:selectOneMenu  id="selectTPago" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{proveedorController.data.terminoPago}" >
+                            <f:selectItem itemLabel="Contado" itemValue="1"/>
+                            <f:selectItem itemLabel="Credito" itemValue="2"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Metodo Pago:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:selectOneMenu  id="selectMPago" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{proveedorController.data.formaPago}" >
+                            <f:selectItem itemLabel="Efectivo" itemValue="1"/>
+                            <f:selectItem itemLabel="Transferencia" itemValue="2"/>
+                            <f:selectItem itemLabel="Deposito" itemValue="3"/>
+                            <f:selectItem itemLabel="Cheque" itemValue="4"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Divisa:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:selectOneMenu  id="selectDivisa" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{proveedorController.data.divisa}" >
+                            <f:selectItem itemLabel="Pesos" itemValue="MXN"/>
+                            <f:selectItem itemLabel="Dolar" itemValue="USD"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Correo:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:inputText value="#{proveedorController.data.correo}" class="col-lg-6 col-md-6 col-sm-6 col-6" maxlength="254"/>
+                    </div>
+                </div>
+            </p:panel>
+        </div>
+
+
+
+    </ui:define>
+</ui:composition>

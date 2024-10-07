@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Orden de Trabajo</title>
+        <p:ajaxStatus onsuccess="PF('statusDialog').hide()" />
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+
+        <div class="container">
+            <p:panel>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Guardar" update=":mainForm" ajax="true" action="#{ordenTrabajoController.save}" onclick="PF('statusDialog').show()"/>
+                    <p:commandButton value="+ Lote" ajax="true" onclick="PF('dlgLote').show()"/>
+                    <p:commandButton value="+ Tipo" ajax="true" onclick="PF('dlgTipo').show()"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row form-group">
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft" for="inputNumeroOrden" value="Numero de Orden:"/>
+                        <p:inputText id="inputNumeroOrden" class="col-lg-6 col-md-6 col-sm-6 col-6" value="#{ordenTrabajoController.data.numeroOrden}" required="true"/>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autocompleteCliente" value ="Cliente:"/> 
+                        <p:autoComplete  placeholder="Seleccione un Cliente" id="autocompleteCliente" required="true" readonly="true"
+                                         value="#{ordenTrabajoController.cliente}" completeMethod="#{ordenTrabajoController.autoCompleteCliente}" var="c" 
+                                         itemLabel="#{c.nombre}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         itemValue="#{c}" converter="#{clienteConverter}">
+
+                        </p:autoComplete>
+                        <p:keyFilter for="autocompleteCliente" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12  ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="calnedarFecha" value ="Fecha Entrega:"/> 
+                        <p:calendar  id="calnedarFecha"  value="#{ordenTrabajoController.data.fechaEntrega}"/>
+                    </div>
+
+                   
+                    <div class="col-lg-9 col-md-6 col-sm-6 col-12">
+                        <p:outputLabel value="Observaciones:" class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"/>
+                        <p:inputText class="col-lg-6 col-md-6 col-sm-6 col-6" maxlength="254" value="#{ordenTrabajoController.data.observaciones}"/>
+                    </div>
+
+                </div>
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                        <p:dataTable id="tableProducto" var="t" value="#{ordenTrabajoController.data.lstOrdenTrabajoProducto}" rowKey="#{t.idOrdenTrabajoProducto}" scrollable="true" style=" width: 100%;" paginator="true" rows="20">
+                            <p:column headerText="Tipo de Ajo" class="alignRight">
+                                <h:outputText value="#{t.tipo}" />
+                            </p:column>
+                            <p:column headerText="Cantidad" class="alignRight">
+                                <h:outputText value="#{t.cantidad}" />
+                            </p:column>
+                            <p:column headerText="Lote Producto Terminado" class="alignRight">
+                                <h:outputText value="#{t.lotePT}" />
+                            </p:column>
+                            <p:column headerText="Remover" width="70px;" class="alignCenter">
+                                <p:commandButton id="cancelarProducto" ajax="true" process=":mainForm" action="#{ordenTrabajoController.remover}" 
+                                                 class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm">
+                                    <f:setPropertyActionListener value="#{t}" target="#{ordenTrabajoController.dataPR}"/>
+                                </p:commandButton>
+                            </p:column>
+
+                            <p:columnGroup type="footer">
+                                <p:row>
+                                    <p:column colspan="2" style="text-align:right" footerText="Totales:"/>
+                                    <p:column colspan="1" style="text-align:right" footerText=""/>
+                                    <p:column colspan="1" style="text-align:right" footerText=""/>
+                                    <p:column colspan="1" style="text-align:right" footerText=""/>
+                                </p:row>
+                            </p:columnGroup>
+                        </p:dataTable>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                        <p:dataTable id="tableLote" var="t" value="#{ordenTrabajoController.data.lstOrdenTrabajoLote}" rowKey="#{t.idEntradaMateriaPrimaPK}" scrollable="true" style=" width: 100%;" paginator="true" rows="20">
+                            <p:column headerText="Lote" class="alignRight">
+                                <h:outputText value="#{t.lote}" />
+                            </p:column>
+
+                            <p:column headerText="Remover" width="70px;" class="alignCenter">
+                                <p:commandButton id="cancelarProducto" ajax="true" process=":mainForm" action="#{ordenTrabajoController.removerLote}" 
+                                                 class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm">
+                                    <f:setPropertyActionListener value="#{t}" target="#{ordenTrabajoController.dataLR}"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>
+            </p:panel>
+
+            <p:dialog id="dialogw" class="objectoSobreMenu" header="Agregar Lote" modal="true" widgetVar="dlgLote" resizable="false">
+                <h:panelGrid columns="1" cellpadding="5" class="componentPanelGrid">
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autoCompleteLote" value ="Numero de Lote:"/> 
+                        <p:autoComplete  placeholder="Seleccione un Lote" id="autoCompleteLote" 
+                                         value="#{ordenTrabajoController.entrada}" completeMethod="#{ordenTrabajoController.autoCompleteLote}" forceSelection="true" var="lote"  
+                                         itemLabel="#{lote.lote}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         itemValue="#{lote}" converter="#{loteConverter}">
+                            <p:ajax event="itemSelect" update=":mainForm:autocompleteCliente" listener="#{ordenTrabajoController.buscaCliente}" />
+
+                        </p:autoComplete>
+                        <p:keyFilter for="autoCompleteLote" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                    </div>
+
+
+                    <p:commandButton value="Registrar" update=":mainForm" 
+                                     action="#{ordenTrabajoController.addLote()}" />
+                </h:panelGrid>
+            </p:dialog> 
+            <p:dialog id="dialogwTipo" class="objectoSobreMenu" header="Agregar Lote" modal="true" widgetVar="dlgTipo" resizable="false">
+                <h:panelGrid columns="1" cellpadding="5" class="componentPanelGrid">
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Cantidad Total:" class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"/>
+                        <p:inputNumber class="col-lg-6 col-md-6 col-sm-6 col-6" value="#{ordenTrabajoController.dataP.cantidad}"/>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Tipo de Ajo:" class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"/>
+                        <p:inputText class="col-lg-12 col-md-12 col-sm-12 col-12" maxlength="64" value="#{ordenTrabajoController.dataP.tipo}"/>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Lote Producto Terminado:" class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft" for="lotePt"/>
+                        <p:inputText class="col-lg-6 col-md-6 col-sm-6 col-6" maxlength="16" id="lotePt" value="#{ordenTrabajoController.dataP.lotePT}"/>
+                    </div>
+
+                    <p:commandButton value="Registrar" update=":mainForm" 
+                                     action="#{ordenTrabajoController.add()}" />
+                </h:panelGrid>
+            </p:dialog>
+            <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="#{ordenTrabajoController.rutaPDF}"/>
+        </div>
+
+    </ui:define>
+</ui:composition>

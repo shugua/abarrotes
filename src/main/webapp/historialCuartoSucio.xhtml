@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Historial Cuarto Sucio</title>
+
+        <h:commandLink>
+            <!--            <h:graphicImage name="images/excel.png" width="24" title="Export to Excel" alt="Export to Excel"/>
+                        <p:dataExporter type="xls" target="tblSismos" fileName="sismos"/>-->
+        </h:commandLink>
+        <p:ajaxStatus onsuccess="PF('estatusDlg').hide()" oncomplete="PF('estatusDlg').hide()" onerror="PF('estatusDlg').hide()" />
+        <p:dialog widgetVar="estatusDlg" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+
+
+
+        <div class="container">
+
+            <p:confirmDialog  global="true" showEffect="fade" hideEffect="fade">
+                <div class="alignCenter">
+                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton  value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </div>
+            </p:confirmDialog>
+
+            <p:panel>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+
+                    <div class="col-lg-12 col-md-6 col-sm-12 col-12 alignRight ">
+                        <p:commandButton value="Buscar" id="btnGuardar" ajax="true" update=":mainForm"  action="#{historialCuartoSucioController.buscar}"/>
+                        <p:commandButton id="imprimir" ajax="true" process="@this" action="#{historialCuartoSucioController.imprimir}" 
+                                         icon="pi pi-print" update=":mainForm">
+                        </p:commandButton>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autoCompleteOrden" value ="Numero de Orden Trabajo"/> 
+                        <p:autoComplete  placeholder="Seleccione una Orden" id="autoCompleteOrden" 
+                                         value="#{historialCuartoSucioController.ordenTrabajo}" completeMethod="#{historialCuartoSucioController.autoCompleteOrdenTrabajo}" forceSelection="true" var="orden"  
+                                         itemLabel="#{orden.numeroOrden}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         itemValue="#{orden}" converter="#{ordenTrabajoConverter}">
+
+                        </p:autoComplete>
+                        <p:keyFilter for="autoCompleteOrden" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="calnedarInicio" value ="Fecha Inicio:"/> 
+                        <p:calendar  id="calnedarInicio"  value="#{historialCuartoSucioController.fechaInicio}"/>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="calendarFin" value ="Fecha Fin:"/> 
+                        <p:calendar  id="calendarFin" value="#{historialCuartoSucioController.fechaFin}"/>
+
+                    </div>
+
+                </div>
+
+
+
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+
+                    <p:dataTable id="historial" var="t" value="#{historialCuartoSucioController.lstMateriaPrimaProducto}" rowKey="#{t.idMateriaPrimaProductoPK}"
+                                 rowStyleClass="#{t.estatus eq '1' ? 'alert-info':(t.estatus eq '2' ? 'alert-warning':'alert-danger')}"  >
+                        <p:column headerText="Fecha de Pelado" width="100px;">
+                            <h:outputText value="#{t.fechaPelado}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Tarima" width="60px;">
+                            <h:outputText value="#{t.numeroTarima}" />
+                        </p:column>
+                        <p:column headerText="Producto" width="170px;">
+                            <h:outputText value="#{t.nombreProducto}" />
+                        </p:column>
+                        <p:column headerText="Cantidad" class="alignRight">
+                            <h:outputText value="#{t.cantidad}" />
+                        </p:column>
+                        <p:column headerText="Peso Bruto" class="alignRight">
+                            <h:outputText value="#{t.pesoBruto}" />
+                        </p:column>
+                        <p:column headerText="Peso Neto" class="alignRight">
+                            <h:outputText value="#{t.pesoNeto}" />
+                        </p:column>
+                        <p:column headerText="Tarima" class="alignLeft">
+                            <h:outputText value="#{t.nombreTarima}" />
+                        </p:column>
+                        <p:column headerText="Presentacion" class="alignLeft">
+                            <h:outputText value="#{t.nombrePresentacion}" />
+                        </p:column>
+                        <p:column headerText="Lote Materia Prima" class="alignLeft">
+                            <h:outputText value="#{t.loteMateriaPrima}" />
+                        </p:column>
+                        <p:column headerText="Orden Trabajo" class="alignLeft">
+                            <h:outputText value="#{t.ordenTrabajo}" />
+                        </p:column>
+                        <p:column headerText="Observaciones" class="alignLeft">
+                            <h:outputText value="#{t.observaciones}" />
+                        </p:column>
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+                                <p:column colspan="2" style="text-align:right" footerText="Totale:"/>
+                                <p:column colspan="1" style="text-align:right" footerText="">
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{historialCuartoSucioController.cantidadTotal}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column colspan="1" style="text-align:right" footerText="">
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{historialCuartoSucioController.pesoBrutoTotal}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column colspan="1" style="text-align:right" footerText="">
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{historialCuartoSucioController.pesoNetoTotal}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+
+                            </p:row>
+                        </p:columnGroup>
+
+
+                    </p:dataTable>
+                </div>
+            </p:panel>
+
+
+            <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="#{historialCuartoSucioController.rutaPDF}"/>
+
+
+        </div>
+    </ui:define>
+</ui:composition>

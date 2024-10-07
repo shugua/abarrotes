@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence           http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+  <persistence-unit name="com.fresh_Fresh_jar_1.0-SNAPSHOTPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>com.fresh.dominio.Usuario</class>
+    <class>com.fresh.dominio.Rol</class>
+    <class>com.fresh.dominio.AccesMenu</class>
+    <class>com.fresh.dominio.Menu</class>
+    <class>com.fresh.dominio.bd.AccesMenu</class>
+    <class>com.fresh.dominio.bd.Menu</class>
+    <class>com.fresh.dominio.bd.Rol</class>
+    <class>com.fresh.dominio.create.Proveedor</class>
+    <class>com.fresh.dominio.create.Cliente</class>
+    <class>com.fresh.dominio.create.Producto</class>
+    <class>com.fresh.dominio.EntradaMateriaPrima</class>
+    <class>com.fresh.dominio.EntradaMateriaPrimaProducto</class>
+    <class>com.fresh.dominio.TipoTarima</class>
+    <class>com.fresh.dominio.TipoPresentacion</class>
+    <class>com.fresh.dominio.OrdenTrabajo</class>
+    <class>com.fresh.dominio.OrdenTrabajoProducto</class>
+    <class>com.fresh.controller.Bodega</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/fresh?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
+      <property name="javax.persistence.jdbc.user" value="root"/>
+      <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+      <property name="javax.persistence.jdbc.password" value="AB52%0P=QWERYY2a"/>
+    </properties>
+  </persistence-unit>
+</persistence>

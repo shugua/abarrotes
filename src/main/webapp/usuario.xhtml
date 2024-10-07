@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Usuario</title>
+        <!--        <h:commandLink>
+                    <h:graphicImage name="images/excel.png" width="24" title="Export to Excel" alt="Export to Excel"/>
+                    <p:dataExporter type="xls" target="tblSismos" fileName="sismos"/>
+                </h:commandLink>-->
+        <p:ajaxStatus onsuccess="PF('statusDialog').hide()" />
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+            
+        </p:dialog>
+        
+        <div class="container">
+            <p:panel rendered="#{usuarioController.stateView == 'init'}">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Nuevo" update=":mainForm" ajax="true" action="#{usuarioController.viewNew}" onclick="PF('statusDialog').show()" resetValues="true"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                    <p:dataTable id="usuario" var="u" value="#{usuarioController.model}" rowKey="#{u.id}"
+                                 rowStyleClass="#{u.estatus eq '1' ? 'alert-info':'alert-danger'}">
+
+                        <p:column headerText="Id">
+                            <h:outputText value="#{u.id}" />
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{u.nombre}" />
+                        </p:column>
+                        <p:column headerText="Telefono">
+                            <h:outputText value="#{u.telefono}" />
+                        </p:column>
+                        <p:column headerText="Editar">
+                            <p:commandButton id="buttonEditar" ajax="true"  action="#{usuarioController.searchById}" styleClass="edit-button rounded-button ui-button-success" icon="pi pi-pencil" update=":mainForm" onclick="PF('statusDialog').show()">
+                                <f:setPropertyActionListener value="#{u}" target="#{usuarioController.data}"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="Eliminar">
+                            <p:commandButton id="buttonEliminar" ajax="true"  action="#{usuarioController.detele}" class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm" onclick="PF('statusDialog').show()">
+                                <f:setPropertyActionListener value="#{u}" target="#{usuarioController.data}"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </p:panel>
+            <p:panel rendered="#{usuarioController.stateView eq 'new' || usuarioController.stateView eq 'edit'}">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Guardar" update=":mainForm" ajax="true" action="#{usuarioController.save}" onclick="PF('statusDialog').show()"/>
+                    <p:commandButton value="Atras" update=":mainForm" ajax="true" action="#{usuarioController.back}" onclick="PF('statusDialog').show()" immediate="true"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row form-group">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight" for="inputNombre" value="Nombre:"/>
+                        <p:inputText id="inputNombre" class="col-lg-6 col-md-6 col-sm-6 col-6" value="#{usuarioController.data.nombre}" required="true"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Telefono:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:inputText value="#{usuarioController.data.telefono}" class="col-lg-6 col-md-6 col-sm-6 col-6"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Usuario:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:inputText value="#{usuarioController.data.username}" class="col-lg-6 col-md-6 col-sm-6 col-6"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Contraseña:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight" rendered="#{usuarioController.stateView eq 'new'}"/>
+                        <p:inputText value="#{usuarioController.data.password}" class="col-lg-6 col-md-6 col-sm-6 col-6" rendered="#{usuarioController.stateView eq 'new'}"/>
+                    </div>
+
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Rol:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight" for="selectRol" />
+                        <p:selectOneMenu  id="selectRol" value="#{usuarioController.data.idRolFk}" required="true">
+                            <f:selectItem itemLabel="Rol" itemValue="" />
+                            <f:selectItems value="#{usuarioController.lstRol}" var="rol" itemLabel="#{rol.nombreRol}" itemValue="#{rol.idRolPk}"/>
+                            
+                        </p:selectOneMenu>
+
+                    </div>
+                </div>
+            </p:panel>
+        </div>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Productos</title>
+        <p:ajaxStatus onsuccess="PF('statusDialog').hide()" />
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+
+        <div class="container">
+            <p:panel rendered="#{productoController.stateView == 'init'}">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Nuevo" update=":mainForm" ajax="true" action="#{productoController.viewNew}" onclick="PF('statusDialog').show()" resetValues="true"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 form-group">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Tipo:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:selectOneMenu  style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{productoController.tipo}" >
+                            <f:selectItem itemLabel="Material Empaque" itemValue="1"/>
+                            <f:selectItem itemLabel="Materia Prima" itemValue="2"/>
+                            <p:ajax event="itemSelect" update=":mainForm:tProducto" listener="#{productoController.buscaProducto}" />
+
+                        </p:selectOneMenu>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 form-group">
+                    <p:dataTable id="tProducto" var="p" value="#{productoController.model}" rowKey="#{p.idProductoPk}"
+                                 rowStyleClass="#{p.estatus eq '1' ? 'alert-info':'alert-danger'}">
+
+                        <p:column headerText="Id">
+                            <h:outputText value="#{p.idProductoPk}" />
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{p.nombre}" />
+                        </p:column>
+                        <p:column headerText="Telefono">
+                            <h:outputText value="#{p.codigo}" />
+                        </p:column>
+<!--                        <p:column headerText="Tipo">
+                            <h:outputText value="{p.tipo}" />
+                        </p:column>-->
+                        <p:column headerText="Minimo">
+                            <h:outputText value="#{p.minimo}" />
+                        </p:column>
+                        <p:column headerText="Tiempo Entrega">
+                            <h:outputText value="#{p.tiempoEntrega}" />
+                        </p:column>
+                        <p:column headerText="Editar">
+                            <p:commandButton id="buttonEditar" ajax="true"  action="#{productoController.searchById}" styleClass="edit-button rounded-button ui-button-success" icon="pi pi-pencil" update=":mainForm" onclick="PF('statusDialog').show()">
+                                <f:setPropertyActionListener value="#{p}" target="#{productoController.data}"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="Eliminar">
+                            <p:commandButton id="buttonEliminar" ajax="true"  action="#{productoController.detele}" class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm" onclick="PF('statusDialog').show()">
+                                <f:setPropertyActionListener value="#{p}" target="#{productoController.data}"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </p:panel>
+            <p:panel rendered="#{productoController.stateView eq 'new' || productoController.stateView eq 'edit'}">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Guardar" update=":mainForm" ajax="true" action="#{productoController.save}" onclick="PF('statusDialog').show()"/>
+                    <p:commandButton value="Atras" update=":mainForm" ajax="true" action="#{productoController.back}" onclick="PF('statusDialog').show()" immediate="true"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row form-group">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight" for="inputNombre" value="Nombre:"/>
+                        <p:inputText id="inputNombre" class="col-lg-6 col-md-6 col-sm-6 col-6" value="#{productoController.data.nombre}" required="true"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Descripcion:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:inputText value="#{productoController.data.descripcion}" class="col-lg-6 col-md-6 col-sm-6 col-6"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Tipo:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:selectOneMenu  style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{productoController.data.tipo}" >
+                            <f:selectItem itemLabel="Material Empaque" itemValue="1"/>
+                            <f:selectItem itemLabel="Materia Prima" itemValue="2"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Minimo:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight"/>
+                        <p:inputNumber value="#{productoController.data.minimo}" decimalPlaces="0" class="col-lg-6 col-md-6 col-sm-6 col-6"/>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Tiempo Entrega:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight" />
+                        <p:inputNumber value="#{productoController.data.tiempoEntrega}" decimalPlaces="0" class="col-lg-6 col-md-6 col-sm-6 col-6" />
+                    </div>
+
+                    <!--                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                            <p:outputLabel value="Rol:" class="col-lg-6 col-md-6 col-sm-6 col-6 alignRight" for="selectRol" />
+                                            <p:selectOneMenu  id="selectRol" value="{productoController.data.idRolFk}" required="true">
+                                                <f:selectItem itemLabel="Rol" itemValue="" />
+                                                <f:selectItems value="{productoController.lstRol}" var="rol" itemLabel="{rol.nombreRol}" itemValue="{rol.idRolPk}"/>
+                    
+                                            </p:selectOneMenu>
+                    
+                                        </div>-->
+                </div>
+            </p:panel>
+        </div>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Lavado</title>
+        <p:ajaxStatus onsuccess="PF('statusDialog').hide()" />
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+
+        <div class="container">
+            <p:panel>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Guardar" update=":mainForm" ajax="true" action="#{lavadoController.save}" onclick="PF('statusDialog').show()"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row form-group">
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autoCompleteLote" value ="Numero de Lote:"/> 
+                        <p:autoComplete  placeholder="Seleccione un Lote" id="autoCompleteLote" 
+                                         value="#{lavadoController.entrada}" completeMethod="#{lavadoController.autoCompleteLote}" forceSelection="true" var="lote"  
+                                         itemLabel="#{lote.lote}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         itemValue="#{lote}" converter="#{loteConverter}">
+
+                        </p:autoComplete>
+                        <p:keyFilter for="autoCompleteLote" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autoCompleteOrden" value ="Numero de Orden Trabajo"/> 
+                        <p:autoComplete  placeholder="Seleccione una Orden" id="autoCompleteOrden" 
+                                         value="#{lavadoController.ordenTrabajo}" completeMethod="#{lavadoController.autoCompleteOrdenTrabajo}" forceSelection="true" var="orden"  
+                                         itemLabel="#{orden.numeroOrden}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         itemValue="#{orden}" converter="#{ordenTrabajoConverter}">
+
+                        </p:autoComplete>
+                        <p:keyFilter for="autoCompleteLote" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                    </div>
+
+                </div>
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row form-group">
+
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Cantidad:" class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"/>
+                        <p:inputNumber class="col-lg-6 col-md-6 col-sm-6 col-6" value="#{lavadoController.data.cantidad}" required="true"/>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Peso Neto" class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"/>
+                        <p:inputNumber class="col-lg-6 col-md-6 col-sm-6 col-6" value="#{lavadoController.data.pesoNeto}" required="true"/>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="selectPresentacion" value ="Presentacion:"/> 
+                        <p:selectOneMenu  id="selectPresentacion" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{lavadoController.data.idTipoProductoFk}" >
+                            <f:selectItem  itemLabel="Selecciona" itemValue="#{null}"/>
+                            <f:selectItems value="#{lavadoController.lstTipoProductoD}" var="t" itemLabel="#{t.descripcion}" itemValue="#{t.idTipoProductoPk}"/>
+<!--                            <p:ajax event="change" update=":mainForm:txtPesoNeto" listener="{entradaMateriaPrimaController.calculaPesoNeto()}" onstart="PF('estatusDlg').show()" />-->
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <p:outputLabel value="Observaciones:" class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"/>
+                        <p:inputText class="col-lg-12 col-md-12 col-sm-12 col-12" maxlength="64" value="#{lavadoController.data.observaciones}"/>
+                    </div>
+
+                </div>
+            </p:panel>
+
+
+            <!--<iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="{lavadoController.rutaPDF}"/>-->
+        </div>
+
+    </ui:define>
+</ui:composition>

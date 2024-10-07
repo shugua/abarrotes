@@ -1,0 +1,121 @@
+
+
+html{
+    height: 100%;
+    font-size:12px;
+}
+
+.menu {
+    float: right !important;
+    margin-top: 15px;
+    width: 900px;
+}
+.container{
+
+    padding-left: 0px;
+    padding-right: 0px;
+
+}
+
+body .ui-button {
+    margin: 3px !important;
+}
+
+.form-group{
+    margin-bottom: 15px;
+    margin-bottom: 8px;
+}
+
+.paddingZero{
+    padding: 2px !important;
+}
+
+.zeroPadding{
+    padding: 0px !important;
+}
+.form-group {
+    /*margin-bottom: 15px;*/
+    margin-bottom: 8px;
+}
+input{
+    /*    width: 90% !important;*/
+    padding-bottom: 2px !important;
+    padding-top: 2px !important;
+
+}
+
+/*alinght left*/
+.alignLeft{
+    text-align: left !important;
+}
+.alignRight{
+    text-align: right !important;
+}
+.alignCenter{
+    text-align:center !important;
+}
+
+.alert-success {
+    color: #3c763d !important;
+    background-color: #dff0d8 !important;
+    border-color: #d6e9c6 !important;
+}
+
+.alert-warning {
+    color: #8a6d3b !important;
+    background-color: #fcf8e3 !important;
+    border-color: #faebcc !important;
+}
+
+.alert-danger {
+    color: #a94442 !important;
+    background-color: #f2dede !important;
+    border-color: #ebccd1 !important;
+}
+
+.alert-info {
+    color: #31708f !important;
+    background-color: #d9edf7 !important;
+    border-color: #bce8f1 !important;
+}
+
+body .ui-inputfield {
+    color: #495057;
+    background: #ffffff;
+    padding: 0.5rem 0rem;
+    border: 1px solid #ced4da;
+    outline: 0 none;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.ui-inputnumber{
+    padding-left: 0px;
+    padding-right: 0px;
+
+}
+
+li a:hover{
+    background-color: #ced4da !important;
+    text-decoration: none;
+    padding: 10px  !important;
+    padding-left: 30px !important;
+
+
+}
+.hidden{
+    visibility:hidden;
+}
+
+td{
+
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+
+}
+

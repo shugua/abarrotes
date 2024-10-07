@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Historial Salida</title>
+
+        <h:commandLink>
+            <!--            <h:graphicImage name="images/excel.png" width="24" title="Export to Excel" alt="Export to Excel"/>
+                        <p:dataExporter type="xls" target="tblSismos" fileName="sismos"/>-->
+        </h:commandLink>
+        <p:ajaxStatus onsuccess="PF('estatusDlg').hide()" oncomplete="PF('estatusDlg').hide()" onerror="PF('estatusDlg').hide()" />
+        <p:dialog widgetVar="estatusDlg" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+
+
+
+        <div class="container">
+
+            <p:confirmDialog  global="true" showEffect="fade" hideEffect="fade">
+                <div class="alignCenter">
+                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton  value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </div>
+            </p:confirmDialog>
+
+            <p:panel>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+
+                    <div class="col-lg-12 col-md-6 col-sm-12 col-12 alignRight ">
+                        <p:commandButton value="Buscar" id="btnGuardar" ajax="true" update=":mainForm"  action="#{historialSalidaController.buscar}"/>
+                      
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autoCompleteOrden" value ="Numero de Orden Trabajo"/> 
+                        <p:autoComplete  placeholder="Seleccione una Orden" id="autoCompleteOrden" 
+                                         value="#{historialSalidaController.ordenTrabajo}" completeMethod="#{historialSalidaController.autoCompleteOrdenTrabajo}" forceSelection="true" var="orden"  
+                                         itemLabel="#{orden.numeroOrden}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         itemValue="#{orden}" converter="#{ordenTrabajoConverter}">
+
+                        </p:autoComplete>
+                        <p:keyFilter for="autoCompleteOrden" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="calnedarInicio" value ="Fecha Inicio:"/> 
+                        <p:calendar  id="calnedarInicio"  value="#{historialSalidaController.fechaInicio}"/>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="calendarFin" value ="Fecha Fin:"/> 
+                        <p:calendar  id="calendarFin" value="#{historialSalidaController.fechaFin}"/>
+
+                    </div>
+
+                </div>
+
+
+
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+
+                    <p:dataTable id="historial" var="t" value="#{historialSalidaController.model}" rowKey="#{t.idSalidaPk}"
+                                 rowStyleClass="#{t.estatus eq '1' ? 'alert-info':(t.estatus eq '2' ? 'alert-warning':'alert-danger')}"  >
+                        <p:column style="width:35px;" ariaHeaderText="Row Toggler">
+                            <p:rowToggler/>
+                        </p:column>
+                        <p:column headerText="Fecha" width="100px;">
+                            <h:outputText value="#{t.fecha}">
+                                <f:convertDateTime pattern="MM/dd/yyyy hh:mm" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Salida" width="170px;">
+                            <h:outputText value="#{t.idSalidaPk}" />
+                        </p:column>
+                        <p:column headerText="Cantidad" width="170px;" class="alignRight">
+                            <h:outputText value="#{t.cantidad}" />
+                        </p:column>
+                        <p:column headerText="Kilos Netos" width="170px;" class="alignRight">
+                            <h:outputText value="#{t.kilos}" />
+                        </p:column>
+                        <p:column headerText="Kilos Brutos" width="170px;" class="alignRight">
+                            <h:outputText value="#{t.kilosBruto}" />
+                        </p:column>
+                        <p:column headerText="Chofer" width="170px;">
+                            <h:outputText value="#{t.chofer}" />
+                        </p:column>
+
+                        <p:column headerText="Observaciones" width="170px;">
+                            <h:outputText value="#{t.observaciones}" />
+                        </p:column>
+
+
+<!--                        <p:column headerText="Cancelar" width="70px;" class="alignCenter">
+                            <p:commandButton id="cancelarProducto" ajax="true" process=":mainForm" action="{historialSalidaController.remover}" rendered="{t.estatus eq '1'}"
+                                             class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm">
+                                <f:setPropertyActionListener value="{t}" target="{historialSalidaController.data}"/>
+                            </p:commandButton>
+                        </p:column>-->
+                        <p:rowExpansion>
+                            <p:dataTable id="second" var="st" value="#{t.lstSalidaProducto}" rowKey="#{st.idSalidaProductoPk}"
+                                         rowStyleClass="#{st.estatus eq '1' ? 'alert-info':(s.estatus eq '2' ? 'alert-warning':'alert-danger')}">
+
+
+                                <p:column headerText="Tarima" width="60px;">
+                                    <h:outputText value="#{st.numeroTarima}" />
+                                </p:column>
+                                <p:column headerText="Producto" width="170px;">
+                                    <h:outputText value="#{st.tipoProductoDescripcion}" />
+                                </p:column>
+                                <p:column headerText="Tamaño" width="170px;">
+                                    <h:outputText value="#{st.tamano}" />
+                                </p:column>
+                                <p:column headerText="Cantidad" width="170px;">
+                                    <h:outputText value="#{st.cantidad}" />
+                                </p:column>
+
+
+
+
+                                <p:column headerText="Cancelar" width="70px;" class="alignCenter">
+                                    <p:commandButton id="cancelarProducto" ajax="true" process=":mainForm"  rendered="#{st.estatus eq '1'}" onclick="PF('estatusDlg').show()"
+                                                     class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm" actionListener="#{historialSalidaController.remover(st)}">
+<!--                                        <f:setPropertyActionListener value="{st}" target="{historialSalidaController.dataRemover}"/>-->
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+
+                        </p:rowExpansion>
+
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+                                <p:column colspan="1" style="text-align:right" footerText="Totales:"/>
+                                <p:column colspan="1" style="text-align:right" footerText="">
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{historialSalidaController.cantidadTotal}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column colspan="1" style="text-align:right" footerText="">
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{historialSalidaController.pesoNetoTotal}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column colspan="1" style="text-align:right" footerText="">
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{historialSalidaController.pesoBrutoTotal}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+
+                            </p:row>
+                        </p:columnGroup>
+
+
+                    </p:dataTable>
+                </div>
+            </p:panel>
+
+
+            <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="#{historialSalidaController.rutaPDF}"/>
+
+
+        </div>
+    </ui:define>
+</ui:composition>

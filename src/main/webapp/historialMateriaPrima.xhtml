@@ -1,0 +1,345 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Historial Materia Prima</title>
+
+        <h:commandLink>
+            <!--            <h:graphicImage name="images/excel.png" width="24" title="Export to Excel" alt="Export to Excel"/>
+                        <p:dataExporter type="xls" target="tblSismos" fileName="sismos"/>-->
+        </h:commandLink>
+        <p:ajaxStatus onsuccess="PF('estatusDlg').hide()" oncomplete="PF('estatusDlg').hide()" onerror="PF('estatusDlg').hide()" />
+        <p:dialog widgetVar="estatusDlg" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+
+        
+
+        <div class="container">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                <p:confirmDialog  global="true" showEffect="fade" hideEffect="fade">
+                    <div class="alignCenter">
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton  value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </div>
+                </p:confirmDialog>
+                <div>
+                    <p:panel>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+
+                            <div class="col-lg-12 col-md-6 col-sm-12 col-12 alignRight ">
+                                <p:commandButton value="Buscar" id="btnGuardar" ajax="true" update=":mainForm"  action="#{historialMateriaPrimaController.buscar}"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autocompleteProvedor" value ="Proveedor:"/> 
+                                <p:autoComplete  placeholder="Seleccione un Proveedor" id="autocompleteProvedor"  requiredMessage="Ingresa un valor para el campo Proveedor." 
+                                                 value="#{historialMateriaPrimaController.proveedor}" completeMethod="#{historialMateriaPrimaController.autoCompleteProveedor}" forceSelection="true" var="p"  
+                                                 itemLabel="#{p.nombre}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                                 itemValue="#{p}" converter="#{proveedorConverter}">
+
+                                </p:autoComplete>
+                                <p:keyFilter for="autocompleteProvedor" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autocompleteCliente" value ="Cliente:"/> 
+                                <p:autoComplete  placeholder="Seleccione un Cliente" id="autocompleteCliente"  
+                                                 value="#{historialMateriaPrimaController.cliente}" completeMethod="#{historialMateriaPrimaController.autoCompleteCliente}" var="c" 
+                                                 itemLabel="#{c.nombre}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                                 itemValue="#{c}" converter="#{clienteConverter}">
+
+                                </p:autoComplete>
+                                <p:keyFilter for="autocompleteCliente" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="calnedarInicio" value ="Fecha Inicio:"/> 
+                                <p:calendar  id="calnedarInicio"  value="#{historialMateriaPrimaController.fechaInicio}"/>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="calendarFin" value ="Fecha Fin:"/> 
+                                <p:calendar  id="calendarFin" value="#{historialMateriaPrimaController.fechaFin}"/>
+
+                            </div>
+
+                        </div>
+                    </p:panel>
+                    <p:panel>
+
+
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+                            <p:dataTable id="historial" var="h" value="#{historialMateriaPrimaController.model}" rowKey="#{h.idEntradaMateriaPrimaPK}" editable="true" scrollable="true" style=" width: 100%;" paginator="true" rows="20">
+                                <p:ajax event="rowEdit" listener="#{historialMateriaPrimaController.onRowEdit}" update="historial :mainForm:growl"  />
+                                <p:ajax event="rowEditCancel" listener="#{historialMateriaPrimaController.onRowCancel}" update=":mainForm:growl" />
+
+                                <p:column style="width:35px;" ariaHeaderText="Row Toggler">
+                                    <p:rowToggler/>
+                                </p:column>
+                                <p:column headerText="Lote" width="80px;">
+                                    <h:outputText value="#{h.lote}" />
+                                </p:column>
+                                <p:column headerText="Fecha" width="140px;">
+                                    <h:outputText value="#{h.fecha}" >
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Monterrey"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Proveedor" width="140px;">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{h.nombreProveedor}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:autoComplete  placeholder="Seleccione un Proveedor" id="autocompleteProveedor"  
+                                                             required="true" requiredMessage="Ingresa un valor para el campo Proveedor" 
+                                                             onfocus="this.setSelectionRange(0, this.value.length)"
+                                                             styleClass="autocomplete-input-text-media"
+                                                             value="#{h.proveedor}" 
+                                                             completeMethod="#{historialMateriaPrimaController.autoCompleteProveedor}" 
+                                                             forceSelection="true" var="p"  inputStyle="width: 140px"
+                                                             itemLabel="#{p.nombre}"
+                                                             itemValue="#{p.idProveedorPk}" converter="#{proveedorConverter}">
+                                                <p:ajax event="itemSelect" process="@this" />
+                                            </p:autoComplete>
+                                            <p:keyFilter for="autocompleteProveedor" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="Cliente" width="140px;">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{h.nombreCliente}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:autoComplete  placeholder="Seleccione un Cliente" id="autocompleteCliente"  
+                                                             requiredMessage="Ingresa un valor para el campo Cliente" 
+                                                             onfocus="this.setSelectionRange(0, this.value.length)"
+                                                             styleClass="autocomplete-input-text-media"
+                                                             value="#{h.cliente}" 
+                                                             completeMethod="#{historialMateriaPrimaController.autoCompleteCliente}" 
+                                                             var="c"  inputStyle="width: 140px"
+                                                             itemLabel="#{c.nombre}"
+                                                             itemValue="#{c.idClientePk}" converter="#{clienteConverter}">
+                                                <p:ajax event="itemSelect" process="@this" />
+                                            </p:autoComplete>
+                                            <p:keyFilter for="autocompleteCliente" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                                        </f:facet>
+                                    </p:cellEditor>
+
+
+                                </p:column>
+
+                                <p:column headerText="Remision" width="80px;" class="alignRight">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{h.remision}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{h.remision}" />
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="Cantidad" width="80px;" class="alignRight">
+                                    <h:outputText value="#{h.cantidadProveedor}" />
+                                </p:column>
+                                <p:column headerText="Peso Bruto" width="80px;" class="alignRight">
+                                    <h:outputText value="#{h.pesoBruto}" />
+                                </p:column>
+                                <p:column headerText="Peso Neto" width="80px;" class="alignRight">
+                                    <h:outputText value="#{h.pesoNeto}" />
+                                </p:column>
+                                <p:column headerText="Observaciones" width="140px;">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{h.observaciones}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{h.observaciones}"  maxlength="254"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column width="50px;" class="alignCenter" headerText="Editar">
+                                    <p:rowEditor/>
+                                </p:column>
+                                <p:column headerText="Imprimir" width="70px;" class="alignCenter">
+                                    <p:commandButton id="imprimir" ajax="true" process="@this" action="#{historialMateriaPrimaController.imprimir}" 
+                                                     icon="pi pi-print" update=":mainForm">
+                                        <f:setPropertyActionListener value="#{h}" target="#{historialMateriaPrimaController.data}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Imprimir Tarimas" width="70px;" class="alignCenter">
+                                    <p:commandButton id="imprimirT" ajax="true" process="@this" action="#{historialMateriaPrimaController.imprimirTarima}" 
+                                                     icon="pi pi-print" update=":mainForm">
+                                        <f:setPropertyActionListener value="#{h}" target="#{historialMateriaPrimaController.data}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Agregar Tarima" width="70px;" class="alignCenter">
+                                    <p:commandButton id="agregaTarima" 
+                                                     ajax="true" oncomplete="PF('dlg').show();" update =":mainForm:dialogw:"
+                                                     icon="pi pi-plus" action="#{historialMateriaPrimaController.resetAdd}">
+                                        <f:setPropertyActionListener value="#{h}" target="#{historialMateriaPrimaController.data}"/>
+                                    </p:commandButton>
+                                </p:column>
+
+
+                                <p:rowExpansion>
+                                    <p:dataTable id="historial" var="t" value="#{h.lstMateriaPrimaProducto}" rowKey="#{t.idMateriaPrimaProductoPK}"
+                                                 rowStyleClass="#{t.estatus eq '1' ? 'alert-info':(t.estatus eq '2' ? 'alert-warning':'alert-danger')}" editable="true" >
+
+
+                                        <p:ajax event="rowEdit" listener="#{historialMateriaPrimaController.onRowEditProducto}" update="historial :mainForm:growl"  />
+                                        <p:ajax event="rowEditCancel" listener="#{historialMateriaPrimaController.onRowCancel}" update=":mainForm:growl"/>
+
+
+                                        <p:column headerText="Tarima" width="60px;">
+                                            <h:outputText value="#{t.numeroTarima}" />
+                                        </p:column>
+                                        <p:column headerText="Producto" width="170px;">
+                                            <h:outputText value="#{t.nombreProducto}" />
+                                        </p:column>
+                                        <p:column headerText="Cantidad" class="alignRight">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{t.cantidad}" />
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:inputText value="#{t.cantidad}" />
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column headerText="Peso Bruto" class="alignRight">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{t.pesoBruto}" />
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:inputText value="#{t.pesoBruto}" />
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column headerText="Peso Neto" class="alignRight">
+                                            <h:outputText value="#{t.pesoNeto}" />
+                                        </p:column>
+                                        <p:column headerText="Tarima" class="alignRight">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{t.nombreTarima}" />
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:selectOneMenu  id="selectTarima" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{t.idTarima}" >
+                                                        <f:selectItems value="#{historialMateriaPrimaController.lstTipoTarima}" var="p" itemLabel="#{p.nombre} - #{p.peso}" itemValue="#{p.idTarimaPk}"/>
+                                                    </p:selectOneMenu>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column headerText="Presentacion" class="alignRight">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{t.nombrePresentacion}" />
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:selectOneMenu  id="selectPresentacion" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{t.idPresentacion}" >
+                                                        <f:selectItems value="#{historialMateriaPrimaController.lstTipoPresentacion}" var="p" itemLabel="#{p.nombre} - #{p.peso}" itemValue="#{p.idPresentacionPk}"/>
+                                                    </p:selectOneMenu>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column headerText="Observaciones" class="alignRight">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{t.observaciones}" />
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:inputText value="#{t.observaciones}" />
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column width="50px;" class="alignCenter" headerText="Editar">
+                                            <p:rowEditor rendered="#{t.estatus eq '1'}"/>
+                                        </p:column>
+                                        <p:column headerText="Cancelar" width="70px;" class="alignCenter">
+                                            <p:commandButton id="cancelarProducto" ajax="true" process=":mainForm" action="#{historialMateriaPrimaController.removerProducto}" rendered="#{t.estatus eq '1'}" onclick="PF('estatusDlg').show()"
+                                                             class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm">
+                                                <f:setPropertyActionListener value="#{t}" target="#{historialMateriaPrimaController.dataRemover}"/>
+                                            </p:commandButton>
+                                        </p:column>
+                                    </p:dataTable>
+
+                                </p:rowExpansion>
+
+                                <p:columnGroup type="footer">
+                                    <p:row>
+                                        <p:column colspan="2" style="text-align:right" footerText="Totales:"/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                    </p:row>
+                                </p:columnGroup>
+                            </p:dataTable>
+                        </div>
+
+                        <p:dialog id="dialogw" class="objectoSobreMenu" header="Agregar Tarima" modal="true" widgetVar="dlg" resizable="false">
+                            <h:panelGrid columns="1" cellpadding="5" class="componentPanelGrid">
+                                <p:outputLabel  for="autocompleteProducto" value ="Producto:"/> 
+                                <p:autoComplete  placeholder="Seleccione un Producto" id="autocompleteProducto"  
+                                                 value="#{historialMateriaPrimaController.producto}" completeMethod="#{historialMateriaPrimaController.autoCompleteProducto}" var="p" 
+                                                 itemLabel="#{p.nombre}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                                 itemValue="#{p}" converter="#{productoConverter}">
+                                </p:autoComplete>
+
+
+
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtCantidadP" value ="Cantidad:"/> 
+                                <p:inputNumber  id="txtCantidadP" value="#{historialMateriaPrimaController.dataAdd.cantidad}">
+                                    <p:ajax event="blur" update=":mainForm:txtPesoNeto" listener="#{historialMateriaPrimaController.calculaPesoNeto(historialMateriaPrimaController.dataAdd)}" onstart="PF('estatusDlg').show()" />
+                                </p:inputNumber>
+
+
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtPesoBruto" value ="Peso Bruto:"/> 
+                                <p:inputNumber  id="txtPesoBruto" value="#{historialMateriaPrimaController.dataAdd.pesoBruto}">
+                                    <p:ajax event="blur" update=":mainForm:txtPesoNeto" listener="#{historialMateriaPrimaController.calculaPesoNeto(historialMateriaPrimaController.dataAdd)}" onstart="PF('estatusDlg').show()" />
+                                </p:inputNumber>
+
+
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="selectPresentacion" value ="Presentacion:"/> 
+                                <p:selectOneMenu  id="selectPresentacion" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{historialMateriaPrimaController.dataAdd.idPresentacion}" >
+                                    <f:selectItem  itemLabel="Selecciona" itemValue="#{null}"/>
+                                    <f:selectItems value="#{historialMateriaPrimaController.lstTipoPresentacion}" var="p" itemLabel="#{p.nombre} - #{p.peso}" itemValue="#{p.idPresentacionPk}"/>
+                                    <p:ajax event="change" update=":mainForm:txtPesoNeto" listener="#{historialMateriaPrimaController.calculaPesoNeto(historialMateriaPrimaController.dataAdd)}" onstart="PF('estatusDlg').show()" />
+                                </p:selectOneMenu>
+
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="selectTarima" value ="Tipo de Tarima:"/> 
+                                <p:selectOneMenu  id="selectTarima" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{historialMateriaPrimaController.dataAdd.idTarima}" >
+                                    <f:selectItem  itemLabel="Selecciona" itemValue="#{null}"/>
+                                    <f:selectItems value="#{historialMateriaPrimaController.lstTipoTarima}" var="p" itemLabel="#{p.nombre} - #{p.peso}" itemValue="#{p.idTarimaPk}"/>
+                                    <p:ajax event="change" update=":mainForm:txtPesoNeto" listener="#{historialMateriaPrimaController.calculaPesoNeto(historialMateriaPrimaController.dataAdd)}" onstart="PF('estatusDlg').show()" />
+                                </p:selectOneMenu>
+
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtPesoNeto" value ="Peso Neto:"/> 
+                                <p:inputNumber  id="txtPesoNeto" value="#{historialMateriaPrimaController.dataAdd.pesoNeto}" readonly="true"/>
+
+                                <p:outputLabel class="col-lg-12 col-md-12 col-sm-12 col-12 alignLeft"  for="txtObservacionesP" value ="Observaciones:"/> 
+                                <p:inputText class="col-lg-12 col-md-12 col-sm-12 col-12"  id="txtObservacionesP" maxlength="254" value="#{historialMateriaPrimaController.dataAdd.observaciones}"/>
+
+                                <p:commandButton value="Registrar" update=":mainForm" 
+                                                 action="#{historialMateriaPrimaController.addProducto()}" />
+                            </h:panelGrid>
+                        </p:dialog> 
+                        <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="#{historialMateriaPrimaController.rutaPDF}"/>
+                    </p:panel>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

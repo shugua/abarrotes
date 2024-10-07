@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Envasado</title>
+        <p:ajaxStatus onsuccess="PF('statusDialog').hide()" />
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+
+        <div class="container">
+            <p:panel>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 alignRight form-group">
+                    <p:commandButton value="Guardar" update=":mainForm" ajax="true" actionListener="#{envasadoController.save}"  onclick="PF('statusDialog').show()"/>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row form-group">
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autoCompleteOrden" value ="Numero de Orden Trabajo"/> 
+                        <p:autoComplete  placeholder="Seleccione una Orden" id="autoCompleteOrden" 
+                                         value="#{envasadoController.ordenTrabajo}" completeMethod="#{envasadoController.autoCompleteOrden}" forceSelection="true" var="orden"  
+                                         itemLabel="#{orden.numeroOrden}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         itemValue="#{orden}" converter="#{ordenTrabajoConverter}">
+                            <p:ajax event="itemSelect" update=":mainForm:" listener="#{envasadoController.buscaDatos}" />
+                        </p:autoComplete>
+                        <p:keyFilter for="autoCompleteOrden" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autoCompleteLote" value ="Lote de Materia Prima:"/> 
+                        <p:autoComplete  placeholder="Seleccione un Lote de Materia Prima" id="autoCompleteLote" 
+                                         value="#{envasadoController.entrada}" completeMethod="#{envasadoController.autoCompleteLote}" forceSelection="true" var="lote"  
+                                         itemLabel="#{lote.lote}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         itemValue="#{lote}" converter="#{loteConverter}">
+                        </p:autoComplete>
+                        <p:keyFilter for="autoCompleteLote" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtCantidadP" value ="Cantidad:"/> 
+                        <p:inputNumber  id="txtCantidadP" required="true" value="#{envasadoController.envasadoD.cantidad}">
+                            <p:ajax event="blur" update=":mainForm:pesoNeto :mainForm:txtPesoBruto" listener="#{envasadoController.calculaPeso()}" onstart="PF('statusDialog').show()"/>
+                        </p:inputNumber>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtCantidadCaja" value ="Cantidad por Caja:"/> 
+                        <p:inputNumber  id="txtCantidadCaja" required="true" value="#{envasadoController.envasadoD.cantidadCaja}">
+                            <p:ajax event="blur" update=":mainForm:pesoNeto :mainForm:txtPesoBruto" listener="#{envasadoController.calculaPeso()}" onstart="PF('statusDialog').show()"/>
+                        </p:inputNumber>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="pesoUnitario" value ="Peso Unitario"/> 
+                        <p:inputNumber  id="pesoUnitario" required="true" value="#{envasadoController.envasadoD.pesoUnitario}" decimalPlaces="3">
+                            <p:ajax event="blur" update=":mainForm:pesoNeto :mainForm:txtPesoBruto" listener="#{envasadoController.calculaPeso()}" onstart="PF('statusDialog').show()"/>
+                        </p:inputNumber>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="taraUnitario" value ="Tara Unitario:"/> 
+                        <p:inputNumber  id="taraUnitario" required="true" value="#{envasadoController.envasadoD.taraUnitario}" decimalPlaces="3">
+                            <p:ajax event="blur" update=":mainForm:pesoNeto :mainForm:txtPesoBruto" listener="#{envasadoController.calculaPeso()}" onstart="PF('statusDialog').show()"/>
+                        </p:inputNumber>  
+
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtLotePT" value ="Lote Producto Terminado:"/> 
+                        <p:inputText id="txtLotePT" required="true" value="#{envasadoController.envasadoD.loteProductoTermiando}" maxlength="64"/> 
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="selectPresentacion" value ="Presentacion:"/> 
+                        <p:selectOneMenu  id="selectPresentacion" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{envasadoController.envasadoD.idTipoProductoFk}" >
+                            <f:selectItem  itemLabel="Selecciona" itemValue="#{null}"/>
+                            <f:selectItems value="#{envasadoController.lstTipoProductoD}" var="t" itemLabel="#{t.descripcion}" itemValue="#{t.idTipoProductoPk}"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12">
+                        <p:outputLabel class="col-lg-12 col-md-12 col-sm-4 col-6 alignLeft" for="inputTamaño" value="Tamaño:"/>
+                        <p:inputText id="inputTamaño" class="col-lg-6 col-md-6 col-sm-6 col-12" value="#{envasadoController.envasadoD.tamano}" required="true"/>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtPesoBruto" value ="Peso Bruto:"/> 
+                        <p:inputNumber  id="txtPesoBruto"  value="#{envasadoController.envasadoD.kilosBruto}" readonly="true"/> 
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                        <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="pesoNeto" value ="Peso Neto:"/> 
+                        <p:inputNumber  id="pesoNeto" value="#{envasadoController.envasadoD.kilos}" readonly="true"/> 
+                    </div>
+
+
+                </div>
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+
+                    <p:dataTable id="historial" var="t" value="#{envasadoController.model}" rowKey="#{t.idEnvasadoPk}"
+                                 rowStyleClass="#{t.estatus eq '1' ? 'alert-info':(t.estatus eq '2' ? 'alert-warning':'alert-danger')}"  >
+                        <p:column headerText="Fecha" width="100px;">
+                            <h:outputText value="#{t.fecha}">
+                                <f:convertDateTime pattern="MM/dd/yyyy hh:mm" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Tarima" width="170px;">
+                            <h:outputText value="#{t.numeroTarima}" />
+                        </p:column>
+                        <p:column headerText="Producto" width="170px;">
+                            <h:outputText value="#{t.nombreTipoProducto}" />
+                        </p:column>
+                        <p:column headerText="Cantidad" width="100px;" class="alignRight">
+                            <h:outputText value="#{t.cantidad}" />
+                        </p:column>
+                        <p:column headerText="Peso Neto" width="100px;" class="alignRight">
+                            <h:outputText value="#{t.kilos}" />
+                        </p:column>
+                        <p:column headerText="Lote Materia Prima" width="110px;" class="alignLeft">
+                            <h:outputText value="#{t.lote}" />
+                        </p:column>
+                        <p:column headerText="Numero Orden" width="110px;" class="alignLeft">
+                            <h:outputText value="#{t.numeroOrden}" />
+                        </p:column>
+
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+                                <p:column colspan="1" style="text-align:right" footerText="Totales:"/>
+                                <p:column colspan="1" style="text-align:right" footerText="">
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{envasadoController.cantidadTotal}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column colspan="1" style="text-align:right" footerText="">
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{envasadoController.pesoNetoTotal}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column colspan="1" style="text-align:right" footerText="">
+
+                                </p:column>
+                                <p:column colspan="1" style="text-align:right" footerText=""/>
+                            </p:row>
+                        </p:columnGroup>
+
+
+                    </p:dataTable>
+                </div>
+
+            </p:panel>
+        </div>
+
+    </ui:define>
+</ui:composition>

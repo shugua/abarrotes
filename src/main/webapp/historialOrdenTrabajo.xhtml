@@ -1,0 +1,275 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Historial Orden de Trabajo</title>
+
+        <p:ajaxStatus onsuccess="PF('estatusDlg').hide()" oncomplete="PF('estatusDlg').hide()" onerror="PF('estatusDlg').hide()" />
+        <p:dialog widgetVar="estatusDlg" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+
+
+
+        <div class="container">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                <p:confirmDialog  global="true" showEffect="fade" hideEffect="fade">
+                    <div class="alignCenter">
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton  value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </div>
+                </p:confirmDialog>
+                <div>
+                    <p:panel>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+
+                            <div class="col-lg-12 col-md-6 col-sm-12 col-12 alignRight ">
+                                <p:commandButton value="Buscar" id="btnGuardar" ajax="true" update=":mainForm"  action="#{historialOrdenTrabajoController.buscar}" onclick="PF('estatusDlg').show()"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autocompleteProvedor" value ="Proveedor:"/> 
+                                <p:autoComplete  placeholder="Seleccione un Proveedor" id="autocompleteProvedor"  requiredMessage="Ingresa un valor para el campo Proveedor." 
+                                                 value="#{historialOrdenTrabajoController.proveedor}" completeMethod="#{historialOrdenTrabajoController.autoCompleteProveedor}" forceSelection="true" var="p"  
+                                                 itemLabel="#{p.nombre}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                                 itemValue="#{p}" converter="#{proveedorConverter}">
+
+                                </p:autoComplete>
+                                <p:keyFilter for="autocompleteProvedor" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autocompleteCliente" value ="Cliente:"/> 
+                                <p:autoComplete  placeholder="Seleccione un Cliente" id="autocompleteCliente"  
+                                                 value="#{historialOrdenTrabajoController.cliente}" completeMethod="#{historialOrdenTrabajoController.autoCompleteCliente}" var="c" 
+                                                 itemLabel="#{c.nombre}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                                 itemValue="#{c}" converter="#{clienteConverter}">
+
+                                </p:autoComplete>
+                                <p:keyFilter for="autocompleteCliente" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="calnedarInicio" value ="Fecha Inicio:"/> 
+                                <p:calendar  id="calnedarInicio"  value="#{historialOrdenTrabajoController.fechaInicio}"/>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="calendarFin" value ="Fecha Fin:"/> 
+                                <p:calendar  id="calendarFin" value="#{historialOrdenTrabajoController.fechaFin}"/>
+
+                            </div>
+
+                        </div>
+                    </p:panel>
+                    <p:panel>
+
+
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+                            <p:dataTable id="historial" var="h" value="#{historialOrdenTrabajoController.model}" rowKey="#{h.idOrdenPk}" editable="true" scrollable="true" style=" width: 100%;" paginator="true" rows="20">
+                                <p:ajax event="rowEdit" listener="#{historialOrdenTrabajoController.onRowEdit}" update="historial :mainForm:growl"  />
+                                <p:ajax event="rowEditCancel" listener="#{historialOrdenTrabajoController.onRowCancel}" update=":mainForm:growl" />
+
+                                <p:column style="width:35px;" ariaHeaderText="Row Toggler">
+                                    <p:rowToggler/>
+                                </p:column>
+                                <p:column headerText="Fecha" width="100px;">
+                                    <h:outputText value="#{h.fecha}" >
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Fecha Entrega" width="100px;">
+
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{h.fechaEntrega}" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                                            </h:outputText>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:calendar  id="calendarFin" value="#{h.fechaEntrega}"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="Orden Trabajo" width="80px;">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{h.numeroOrden}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{h.numeroOrden}"  maxlength="254"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <!--                                <p:column headerText="Lote Prodcuto Terminado" width="80px;">
+                                                                    <p:cellEditor>
+                                                                        <f:facet name="output">
+                                                                            <h:outputText value="{h.lotePT}" />
+                                                                        </f:facet>
+                                                                        <f:facet name="input">
+                                                                            <p:inputText value="{h.lotePT}"  maxlength="254"/>
+                                                                        </f:facet>
+                                                                    </p:cellEditor>
+                                                                </p:column>-->
+                                <p:column headerText="Lote" width="80px;">
+                                    <h:outputText value="#{h.lote}" />
+                                </p:column>
+
+                                <!--                                <p:column headerText="Proveedor" width="140px;">
+                                                                    <h:outputText value="{h.nombreProveedor}" />
+                                                                </p:column>-->
+                                <p:column headerText="Cliente" width="140px;">
+                                    <h:outputText value="#{h.nombreCliente}" />
+                                </p:column>
+                                <p:column headerText="Cantidad" width="80px;" class="alignRight">
+                                    <h:outputText value="#{h.cantidad}" >
+                                        <f:convertNumber parent="#,###,###.00"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Observaciones" width="140px;">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{h.observaciones}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{h.observaciones}"  maxlength="254"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column width="50px;" class="alignCenter" headerText="Editar">
+                                    <p:rowEditor/>
+                                </p:column>
+                                <p:column headerText="Lote" width="70px;">
+                                    <p:commandButton value="+ Lote" ajax="true" onclick="PF('dlgLote').show()">
+                                        <f:setPropertyActionListener value="#{h}" target="#{historialOrdenTrabajoController.data}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Tipo" width="70px;">
+                                    <p:commandButton value="+ Tipo" ajax="true" onclick="PF('dlgTipo').show()">
+                                        <f:setPropertyActionListener value="#{h}" target="#{historialOrdenTrabajoController.data}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Imprimir" width="70px;" class="alignCenter">
+                                    <p:commandButton id="imprimir" ajax="true" process="@this" action="#{historialOrdenTrabajoController.imprimir}" 
+                                                     icon="pi pi-print" update=":mainForm">
+                                        <f:setPropertyActionListener value="#{h}" target="#{historialOrdenTrabajoController.data}"/>
+                                    </p:commandButton>
+
+
+                                </p:column>
+                                <p:rowExpansion>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-6">
+                                            <p:dataTable id="historial" var="t" value="#{h.lstOrdenTrabajoProducto}" rowKey="#{t.idOrdenTrabajoProducto}"
+                                                         rowStyleClass="#{t.estatus eq '1' ? 'alert-info':'alert-danger'}" editable="true" >
+                                                <p:column headerText="Cantidad" width="70px;" class="alignRight">
+                                                    <h:outputText value="#{t.cantidad}" >
+                                                        <f:convertNumber pattern="#,###,###.00" />
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Tipo Producto" width="200px;">
+                                                    <h:outputText value="#{t.tipo}" />
+                                                </p:column>
+                                                <p:column headerText="Lote Producto Termiando" width="200px;">
+                                                    <h:outputText value="#{t.lotePT}" />
+                                                </p:column>
+
+                                                <p:column headerText="Cancelar" width="70px;" class="alignCenter">
+                                                    <p:commandButton id="cancelarProducto" ajax="true" process=":mainForm" action="#{historialOrdenTrabajoController.removerProducto}" 
+                                                                     class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm">
+                                                        <f:setPropertyActionListener value="#{t}" target="#{historialOrdenTrabajoController.oTProductoRemove}"/>
+                                                        <p:confirm header="Confirmación" message="Estas seguro de Cancelar?" icon="ui-icon-alert" />
+
+                                                    </p:commandButton>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-6">
+                                            <p:dataTable id="historialLote" var="t" value="#{h.lstOrdenTrabajoLote}" rowKey="#{t.idEntradaMateriaPrimaFk}">
+                                                <p:column headerText="Cantidad" width="70px;" class="alignRight">
+                                                    <h:outputText value="#{t.lote}" >
+                                                        <f:convertNumber pattern="#,###,###.00" />
+                                                    </h:outputText>
+                                                </p:column>
+
+
+                                                <p:column headerText="Cancelar" width="70px;" class="alignCenter">
+                                                    <p:commandButton id="cancelarLote" ajax="true" process=":mainForm" action="#{historialOrdenTrabajoController.oTPLoteRemove}" 
+                                                                     class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm">
+                                                        <f:setPropertyActionListener value="#{t}" target="#{historialOrdenTrabajoController.OTrabajoLoteR}"/>
+                                                        <p:confirm header="Confirmación" message="Estas seguro de Cancelar?" icon="ui-icon-alert" />
+
+                                                    </p:commandButton>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                </p:rowExpansion>
+
+                                <p:columnGroup type="footer">
+                                    <p:row>
+                                        <p:column colspan="2" style="text-align:right" footerText="Totales:"/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                    </p:row>
+                                </p:columnGroup>
+                            </p:dataTable>
+                        </div>
+
+
+                        <p:dialog id="dialogw" class="objectoSobreMenu" header="Agregar Lote" modal="true" widgetVar="dlgLote" resizable="false">
+                            <h:panelGrid columns="1" cellpadding="5" class="componentPanelGrid">
+
+                                <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                    <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autoCompleteLote" value ="Numero de Lote:"/> 
+                                    <p:autoComplete  placeholder="Seleccione un Lote" id="autoCompleteLote" 
+                                                     value="#{historialOrdenTrabajoController.entrada}" completeMethod="#{historialOrdenTrabajoController.autoCompleteLote}" forceSelection="true" var="lote"  
+                                                     itemLabel="#{lote.lote}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                                     itemValue="#{lote}" converter="#{loteConverter}">
+                                    </p:autoComplete>
+                                    <p:keyFilter for="autoCompleteLote" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                                </div>
+
+
+                                <p:commandButton value="Registrar" update=":mainForm" 
+                                                 action="#{historialOrdenTrabajoController.addLote()}" />
+                            </h:panelGrid>
+                        </p:dialog> 
+                        <p:dialog id="dialogwTipo" class="objectoSobreMenu" header="Agregar Lote" modal="true" widgetVar="dlgTipo" resizable="false">
+                            <h:panelGrid columns="1" cellpadding="5" class="componentPanelGrid">
+                                <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                                    <p:outputLabel value="Cantidad Total:" class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"/>
+                                    <p:inputNumber class="col-lg-6 col-md-6 col-sm-6 col-6" value="#{historialOrdenTrabajoController.dataP.cantidad}"/>
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                                    <p:outputLabel value="Tipo de Ajo:" class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"/>
+                                    <p:inputText class="col-lg-12 col-md-12 col-sm-12 col-12" maxlength="64" value="#{historialOrdenTrabajoController.dataP.tipo}"/>
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                                    <p:outputLabel value="Lote Producto Terminado:" class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft" for="lotePt"/>
+                                    <p:inputText class="col-lg-6 col-md-6 col-sm-6 col-6" maxlength="16" id="lotePt" value="#{historialOrdenTrabajoController.dataP.lotePT}"/>
+                                </div>
+
+                                <p:commandButton value="Registrar" update=":mainForm" 
+                                                 action="#{historialOrdenTrabajoController.add()}" />
+                            </h:panelGrid>
+                        </p:dialog>
+
+                        <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="#{historialOrdenTrabajoController.rutaPDF}"/>
+                    </p:panel>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

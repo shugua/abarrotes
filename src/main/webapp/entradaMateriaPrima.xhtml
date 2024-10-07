@@ -1,0 +1,185 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">        
+        <title>Entrada Materia Prima</title>
+
+        <h:commandLink>
+            <!--            <h:graphicImage name="images/excel.png" width="24" title="Export to Excel" alt="Export to Excel"/>
+                        <p:dataExporter type="xls" target="tblSismos" fileName="sismos"/>-->
+        </h:commandLink>
+        <p:ajaxStatus onsuccess="PF('estatusDlg').hide()" oncomplete="PF('estatusDlg').hide()" onerror="PF('estatusDlg').hide()" />
+        <p:dialog widgetVar="estatusDlg" modal="true" draggable="false"
+                  closable="false" resizable="false" showHeader="false">
+            <p:graphicImage value="../resources/images/load.gif" />
+        </p:dialog>
+        
+        <div class="container">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                <p:confirmDialog  global="true" showEffect="fade" hideEffect="fade">
+                    <div class="alignCenter">
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton  value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </div>
+                </p:confirmDialog>
+                <div>
+                    <p:panel>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+
+                            <div class="col-lg-12 col-md-6 col-sm-12 col-12 alignRight ">
+                                <p:commandButton value="Guardar" id="btnGuardar" ajax="true" immediate="true" resetValues="true" action="#{entradaMateriaPrimaController.save}" update=":mainForm"  onclick="PF('estatusDlg').show()"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autocompleteProvedor" value ="Proveedor:"/> 
+                                <p:autoComplete  placeholder="Seleccione un Proveedor" id="autocompleteProvedor"  required="true" requiredMessage="Ingresa un valor para el campo Proveedor." 
+                                                 value="#{entradaMateriaPrimaController.proveedor}" completeMethod="#{entradaMateriaPrimaController.autoCompleteProveedor}" forceSelection="true" var="p"  
+                                                 itemLabel="#{p.nombre}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                                 itemValue="#{p}" converter="#{proveedorConverter}">
+
+                                </p:autoComplete>
+                                <p:keyFilter for="autocompleteProvedor" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autocompleteCliente" value ="Cliente:"/> 
+                                <p:autoComplete  placeholder="Seleccione un Cliente" id="autocompleteCliente"  
+                                                 value="#{entradaMateriaPrimaController.cliente}" completeMethod="#{entradaMateriaPrimaController.autoCompleteCliente}" var="c" 
+                                                 itemLabel="#{c.nombre}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                                 itemValue="#{c}" converter="#{clienteConverter}">
+
+                                </p:autoComplete>
+                                <p:keyFilter for="autocompleteCliente" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtRemision" value ="Remision:"/> 
+                                <p:inputText  id="txtRemision" required="true" value="#{entradaMateriaPrimaController.data.remision}" />
+                            </div>
+                  
+<!--                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtCantidad" value ="Cantidad Proveedor:"/> 
+                                <p:inputNumber  id="txtCantidad" required="true" value="{entradaMateriaPrimaController.data.cantidadProveedor}"/>
+                            </div>-->
+                            <div class="col-lg-7 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="txtObservaciones" value ="Observaciones:"/> 
+                                <p:inputText class="col-lg-12 col-md-8 col-sm-8 col-12" id="txtObservaciones" maxlength="254" value="#{entradaMateriaPrimaController.data.observaciones}" />
+                            </div>
+                        </div>
+                    </p:panel>
+                    <p:panel>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 ">
+                                <h5><b>Detalle de Entrada</b></h5>
+                            </div>
+                            <div class="col-lg-12 col-md-6 col-sm-12 col-12 alignRight ">
+                                <div class="form-group" align="right">
+                                    <p:commandButton id="agregar" value="Agregar" update=":mainForm" ajax="true" action="#{entradaMateriaPrimaController.addProducto}" onstart="PF('estatusDlg').show()"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-6 alignLeft"  for="autocompleteProducto" value ="Producto:"/> 
+                                <p:autoComplete  placeholder="Seleccione un Producto" id="autocompleteProducto"  
+                                                 value="#{entradaMateriaPrimaController.producto}" completeMethod="#{entradaMateriaPrimaController.autoCompleteProducto}" var="p" 
+                                                 itemLabel="#{p.nombre}" onfocus="this.setSelectionRange(0, this.value.length)"
+                                                 itemValue="#{p}" converter="#{productoConverter}">
+
+                                </p:autoComplete>
+                                <p:keyFilter for="autocompleteProducto" regEx="/[a-z0-9-_Ãñ±\s]/i" />
+                            </div> 
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtCantidadP" value ="Cantidad:"/> 
+                                <p:inputNumber  id="txtCantidadP" required="true" value="#{entradaMateriaPrimaController.dataAdd.cantidad}">
+                                    <p:ajax event="blur" update=":mainForm:txtPesoNeto" listener="#{entradaMateriaPrimaController.calculaPesoNeto()}" onstart="PF('estatusDlg').show()" />
+                                </p:inputNumber>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtPesoBruto" value ="Peso Bruto:"/> 
+                                <p:inputNumber  id="txtPesoBruto" required="true" value="#{entradaMateriaPrimaController.dataAdd.pesoBruto}">
+                                    <p:ajax event="blur" update=":mainForm:txtPesoNeto" listener="#{entradaMateriaPrimaController.calculaPesoNeto()}" onstart="PF('estatusDlg').show()" />
+                                </p:inputNumber>
+
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="selectPresentacion" value ="Presentacion:"/> 
+                                <p:selectOneMenu  id="selectPresentacion" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{entradaMateriaPrimaController.dataAdd.idPresentacion}" >
+                                    <f:selectItem  itemLabel="Selecciona" itemValue="#{null}"/>
+                                    <f:selectItems value="#{entradaMateriaPrimaController.lstTipoPresentacion}" var="p" itemLabel="#{p.nombre} - #{p.peso}" itemValue="#{p.idPresentacionPk}"/>
+                                    <p:ajax event="change" update=":mainForm:txtPesoNeto" listener="#{entradaMateriaPrimaController.calculaPesoNeto()}" onstart="PF('estatusDlg').show()" />
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="selectTarima" value ="Tipo de Tarima:"/> 
+                                <p:selectOneMenu  id="selectTarima" style="width:100% !important;" class=" col-lg-6 col-md-6 col-sm-8 col-xs-12" value="#{entradaMateriaPrimaController.dataAdd.idTarima}" >
+                                    <f:selectItem  itemLabel="Selecciona" itemValue="#{null}"/>
+                                    <f:selectItems value="#{entradaMateriaPrimaController.lstTipoTarima}" var="p" itemLabel="#{p.nombre} - #{p.peso}" itemValue="#{p.idTarimaPk}"/>
+                                    <p:ajax event="change" update=":mainForm:txtPesoNeto" listener="#{entradaMateriaPrimaController.calculaPesoNeto()}" onstart="PF('estatusDlg').show()" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-4 col-sm-4 col-12 alignLeft"  for="txtPesoNeto" value ="Peso Neto:"/> 
+                                <p:inputNumber  id="txtPesoNeto" required="true" value="#{entradaMateriaPrimaController.dataAdd.pesoNeto}" readonly="true"/>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 ">
+                                <p:outputLabel class="col-lg-12 col-md-12 col-sm-12 col-12 alignLeft"  for="txtObservacionesP" value ="Observaciones:"/> 
+                                <p:inputText class="col-lg-12 col-md-12 col-sm-12 col-12"  id="txtObservacionesP" maxlength="254" value="#{entradaMateriaPrimaController.dataAdd.observaciones}"/>
+                            </div>
+
+
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 row">
+                            <p:dataTable id="proveedor" var="p" value="#{entradaMateriaPrimaController.lstProducto}">
+
+                                <p:column headerText="Numero Tarima">
+                                    <h:outputText value="#{p.numeroTarima}" />
+                                </p:column>
+                                <p:column headerText="Producto">
+                                    <h:outputText value="#{p.nombreProducto}" />
+                                </p:column>
+                                <p:column headerText="Cantidad" class="alignRight">
+                                    <h:outputText value="#{p.cantidad}" />
+                                </p:column>
+                                <p:column headerText="Peso Bruto" class="alignRight">
+                                    <h:outputText value="#{p.pesoBruto}" />
+                                </p:column>
+                                <p:column headerText="Peso Neto" class="alignRight">
+                                    <h:outputText value="#{p.pesoNeto}" />
+                                </p:column>
+                                    <p:column headerText="Observaciones" class="alignRight">
+                                    <h:outputText value="#{p.observaciones}" />
+                                </p:column>
+                                <p:column headerText="Eliminar">
+                                    <p:commandButton id="buttonEliminar" ajax="true"  action="#{entradaMateriaPrimaController.removerProducto}" class="ui-button-warning rounded-button" icon="pi pi-trash" update=":mainForm" immediate="true" onclick="PF('statusDialog').show()">
+                                        <f:setPropertyActionListener value="#{p}" target="#{entradaMateriaPrimaController.dataRemover}"/>
+                                    </p:commandButton>
+                                </p:column>
+
+                                <p:columnGroup type="footer">
+                                    <p:row>
+                                        <p:column colspan="2" style="text-align:right" footerText="Totales:"/>
+                                        <p:column colspan="1" style="text-align:right" footerText="#{entradaMateriaPrimaController.data.cantidadProveedor}"/>
+                                        <p:column colspan="1" style="text-align:right" footerText="#{entradaMateriaPrimaController.data.pesoBruto}"/>
+                                        <p:column colspan="1" style="text-align:right" footerText="#{entradaMateriaPrimaController.data.pesoNeto}"/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                        <p:column colspan="1" style="text-align:right" footerText=""/>
+                                    </p:row>
+                                </p:columnGroup>
+                            </p:dataTable>
+                        </div>
+                    </p:panel>
+                    <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden"  src="#{entradaMateriaPrimaController.rutaPDF}"/>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
